@@ -24,3 +24,45 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.app-container {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.map-area {
+  width: 100%;
+  height: 100%;
+}
+
+.menu-btn {
+  position: absolute;
+  top: 80px;
+  left: 20px;
+  z-index: 20;
+  background: white;
+  border: none;
+  font-size: 24px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transition: left 0.3s ease;
+}
+
+/* When the sidebar is open, push the button inside it */
+.menu-btn.inside {
+  left: 180px; /* adjust this depending on sidebar width */
+  z-index: 5;  /* behind sidebar text */
+}
+
+/* Force white background for all body/page areas */
+body, .app-container, .map-area {
+  background-color: white;
+  color: black;
+  overflow-y: auto; 
+
+}
+
