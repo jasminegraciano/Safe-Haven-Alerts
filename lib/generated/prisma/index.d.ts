@@ -20,6 +20,25 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
 export type Alert = $Result.DefaultSelection<Prisma.$AlertPayload>
 
 /**
+ * Enums
+ */
+export namespace $Enums {
+  export const category: {
+  HOTSPOT: 'HOTSPOT',
+  LAW_ENFORCEMENT_PRESENCE: 'LAW_ENFORCEMENT_PRESENCE',
+  COMMUNITY_SHELTER: 'COMMUNITY_SHELTER',
+  HEALTH_AND_SERVICES: 'HEALTH_AND_SERVICES'
+};
+
+export type category = (typeof category)[keyof typeof category]
+
+}
+
+export type category = $Enums.category
+
+export const category: typeof $Enums.category
+
+/**
  * ##  Prisma Client ʲˢ
  *
  * Type-safe database client for TypeScript & Node.js
@@ -882,37 +901,37 @@ export namespace Prisma {
   }
 
   export type AlertAvgAggregateOutputType = {
-    id: number | null
-    latitude: number | null
-    longitude: number | null
+    latitude: Decimal | null
+    longitude: Decimal | null
   }
 
   export type AlertSumAggregateOutputType = {
-    id: number | null
-    latitude: number | null
-    longitude: number | null
+    latitude: Decimal | null
+    longitude: Decimal | null
   }
 
   export type AlertMinAggregateOutputType = {
-    id: number | null
+    id: string | null
     title: string | null
-    category: string | null
+    category: $Enums.category | null
     description: string | null
     address: string | null
-    latitude: number | null
-    longitude: number | null
+    latitude: Decimal | null
+    longitude: Decimal | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type AlertMaxAggregateOutputType = {
-    id: number | null
+    id: string | null
     title: string | null
-    category: string | null
+    category: $Enums.category | null
     description: string | null
     address: string | null
-    latitude: number | null
-    longitude: number | null
+    latitude: Decimal | null
+    longitude: Decimal | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type AlertCountAggregateOutputType = {
@@ -924,18 +943,17 @@ export namespace Prisma {
     latitude: number
     longitude: number
     createdAt: number
+    updatedAt: number
     _all: number
   }
 
 
   export type AlertAvgAggregateInputType = {
-    id?: true
     latitude?: true
     longitude?: true
   }
 
   export type AlertSumAggregateInputType = {
-    id?: true
     latitude?: true
     longitude?: true
   }
@@ -949,6 +967,7 @@ export namespace Prisma {
     latitude?: true
     longitude?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type AlertMaxAggregateInputType = {
@@ -960,6 +979,7 @@ export namespace Prisma {
     latitude?: true
     longitude?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type AlertCountAggregateInputType = {
@@ -971,6 +991,7 @@ export namespace Prisma {
     latitude?: true
     longitude?: true
     createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -1061,14 +1082,15 @@ export namespace Prisma {
   }
 
   export type AlertGroupByOutputType = {
-    id: number
+    id: string
     title: string
-    category: string
+    category: $Enums.category
     description: string
     address: string
-    latitude: number
-    longitude: number
+    latitude: Decimal
+    longitude: Decimal
     createdAt: Date
+    updatedAt: Date
     _count: AlertCountAggregateOutputType | null
     _avg: AlertAvgAggregateOutputType | null
     _sum: AlertSumAggregateOutputType | null
@@ -1099,6 +1121,7 @@ export namespace Prisma {
     latitude?: boolean
     longitude?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["alert"]>
 
   export type AlertSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1110,6 +1133,7 @@ export namespace Prisma {
     latitude?: boolean
     longitude?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["alert"]>
 
   export type AlertSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1121,6 +1145,7 @@ export namespace Prisma {
     latitude?: boolean
     longitude?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["alert"]>
 
   export type AlertSelectScalar = {
@@ -1132,22 +1157,24 @@ export namespace Prisma {
     latitude?: boolean
     longitude?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type AlertOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "category" | "description" | "address" | "latitude" | "longitude" | "createdAt", ExtArgs["result"]["alert"]>
+  export type AlertOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "category" | "description" | "address" | "latitude" | "longitude" | "createdAt" | "updatedAt", ExtArgs["result"]["alert"]>
 
   export type $AlertPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Alert"
     objects: {}
     scalars: $Extensions.GetPayloadResult<{
-      id: number
+      id: string
       title: string
-      category: string
+      category: $Enums.category
       description: string
       address: string
-      latitude: number
-      longitude: number
+      latitude: Prisma.Decimal
+      longitude: Prisma.Decimal
       createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["alert"]>
     composites: {}
   }
@@ -1571,14 +1598,15 @@ export namespace Prisma {
    * Fields of the Alert model
    */
   interface AlertFieldRefs {
-    readonly id: FieldRef<"Alert", 'Int'>
+    readonly id: FieldRef<"Alert", 'String'>
     readonly title: FieldRef<"Alert", 'String'>
-    readonly category: FieldRef<"Alert", 'String'>
+    readonly category: FieldRef<"Alert", 'category'>
     readonly description: FieldRef<"Alert", 'String'>
     readonly address: FieldRef<"Alert", 'String'>
-    readonly latitude: FieldRef<"Alert", 'Float'>
-    readonly longitude: FieldRef<"Alert", 'Float'>
+    readonly latitude: FieldRef<"Alert", 'Decimal'>
+    readonly longitude: FieldRef<"Alert", 'Decimal'>
     readonly createdAt: FieldRef<"Alert", 'DateTime'>
+    readonly updatedAt: FieldRef<"Alert", 'DateTime'>
   }
     
 
@@ -1967,7 +1995,8 @@ export namespace Prisma {
     address: 'address',
     latitude: 'latitude',
     longitude: 'longitude',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type AlertScalarFieldEnum = (typeof AlertScalarFieldEnum)[keyof typeof AlertScalarFieldEnum]
@@ -1995,20 +2024,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-  /**
    * Reference to a field of type 'String'
    */
   export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String'>
@@ -2023,16 +2038,30 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Float'
+   * Reference to a field of type 'category'
    */
-  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+  export type EnumcategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'category'>
     
 
 
   /**
-   * Reference to a field of type 'Float[]'
+   * Reference to a field of type 'category[]'
    */
-  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+  export type ListEnumcategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'category[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Decimal'
+   */
+  export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+  /**
+   * Reference to a field of type 'Decimal[]'
+   */
+  export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
     
 
 
@@ -2048,6 +2077,20 @@ export namespace Prisma {
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
     
+
+
+  /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
   /**
    * Deep Input Types
    */
@@ -2057,14 +2100,15 @@ export namespace Prisma {
     AND?: AlertWhereInput | AlertWhereInput[]
     OR?: AlertWhereInput[]
     NOT?: AlertWhereInput | AlertWhereInput[]
-    id?: IntFilter<"Alert"> | number
+    id?: UuidFilter<"Alert"> | string
     title?: StringFilter<"Alert"> | string
-    category?: StringFilter<"Alert"> | string
+    category?: EnumcategoryFilter<"Alert"> | $Enums.category
     description?: StringFilter<"Alert"> | string
     address?: StringFilter<"Alert"> | string
-    latitude?: FloatFilter<"Alert"> | number
-    longitude?: FloatFilter<"Alert"> | number
+    latitude?: DecimalFilter<"Alert"> | Decimal | DecimalJsLike | number | string
+    longitude?: DecimalFilter<"Alert"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFilter<"Alert"> | Date | string
+    updatedAt?: DateTimeFilter<"Alert"> | Date | string
   }
 
   export type AlertOrderByWithRelationInput = {
@@ -2076,20 +2120,22 @@ export namespace Prisma {
     latitude?: SortOrder
     longitude?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type AlertWhereUniqueInput = Prisma.AtLeast<{
-    id?: number
+    id?: string
     AND?: AlertWhereInput | AlertWhereInput[]
     OR?: AlertWhereInput[]
     NOT?: AlertWhereInput | AlertWhereInput[]
     title?: StringFilter<"Alert"> | string
-    category?: StringFilter<"Alert"> | string
+    category?: EnumcategoryFilter<"Alert"> | $Enums.category
     description?: StringFilter<"Alert"> | string
     address?: StringFilter<"Alert"> | string
-    latitude?: FloatFilter<"Alert"> | number
-    longitude?: FloatFilter<"Alert"> | number
+    latitude?: DecimalFilter<"Alert"> | Decimal | DecimalJsLike | number | string
+    longitude?: DecimalFilter<"Alert"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFilter<"Alert"> | Date | string
+    updatedAt?: DateTimeFilter<"Alert"> | Date | string
   }, "id">
 
   export type AlertOrderByWithAggregationInput = {
@@ -2101,6 +2147,7 @@ export namespace Prisma {
     latitude?: SortOrder
     longitude?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: AlertCountOrderByAggregateInput
     _avg?: AlertAvgOrderByAggregateInput
     _max?: AlertMaxOrderByAggregateInput
@@ -2112,99 +2159,111 @@ export namespace Prisma {
     AND?: AlertScalarWhereWithAggregatesInput | AlertScalarWhereWithAggregatesInput[]
     OR?: AlertScalarWhereWithAggregatesInput[]
     NOT?: AlertScalarWhereWithAggregatesInput | AlertScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"Alert"> | number
+    id?: UuidWithAggregatesFilter<"Alert"> | string
     title?: StringWithAggregatesFilter<"Alert"> | string
-    category?: StringWithAggregatesFilter<"Alert"> | string
+    category?: EnumcategoryWithAggregatesFilter<"Alert"> | $Enums.category
     description?: StringWithAggregatesFilter<"Alert"> | string
     address?: StringWithAggregatesFilter<"Alert"> | string
-    latitude?: FloatWithAggregatesFilter<"Alert"> | number
-    longitude?: FloatWithAggregatesFilter<"Alert"> | number
+    latitude?: DecimalWithAggregatesFilter<"Alert"> | Decimal | DecimalJsLike | number | string
+    longitude?: DecimalWithAggregatesFilter<"Alert"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeWithAggregatesFilter<"Alert"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Alert"> | Date | string
   }
 
   export type AlertCreateInput = {
+    id?: string
     title: string
-    category: string
+    category: $Enums.category
     description: string
     address: string
-    latitude: number
-    longitude: number
+    latitude: Decimal | DecimalJsLike | number | string
+    longitude: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type AlertUncheckedCreateInput = {
-    id?: number
+    id?: string
     title: string
-    category: string
+    category: $Enums.category
     description: string
     address: string
-    latitude: number
-    longitude: number
+    latitude: Decimal | DecimalJsLike | number | string
+    longitude: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type AlertUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    category?: StringFieldUpdateOperationsInput | string
+    category?: EnumcategoryFieldUpdateOperationsInput | $Enums.category
     description?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    latitude?: FloatFieldUpdateOperationsInput | number
-    longitude?: FloatFieldUpdateOperationsInput | number
+    latitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    longitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AlertUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    category?: StringFieldUpdateOperationsInput | string
+    category?: EnumcategoryFieldUpdateOperationsInput | $Enums.category
     description?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    latitude?: FloatFieldUpdateOperationsInput | number
-    longitude?: FloatFieldUpdateOperationsInput | number
+    latitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    longitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AlertCreateManyInput = {
-    id?: number
+    id?: string
     title: string
-    category: string
+    category: $Enums.category
     description: string
     address: string
-    latitude: number
-    longitude: number
+    latitude: Decimal | DecimalJsLike | number | string
+    longitude: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type AlertUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    category?: StringFieldUpdateOperationsInput | string
+    category?: EnumcategoryFieldUpdateOperationsInput | $Enums.category
     description?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    latitude?: FloatFieldUpdateOperationsInput | number
-    longitude?: FloatFieldUpdateOperationsInput | number
+    latitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    longitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AlertUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    category?: StringFieldUpdateOperationsInput | string
+    category?: EnumcategoryFieldUpdateOperationsInput | $Enums.category
     description?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    latitude?: FloatFieldUpdateOperationsInput | number
-    longitude?: FloatFieldUpdateOperationsInput | number
+    latitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    longitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
+  export type UuidFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedUuidFilter<$PrismaModel> | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -2222,15 +2281,22 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
-  export type FloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
+  export type EnumcategoryFilter<$PrismaModel = never> = {
+    equals?: $Enums.category | EnumcategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.category[] | ListEnumcategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.category[] | ListEnumcategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumcategoryFilter<$PrismaModel> | $Enums.category
+  }
+
+  export type DecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
   }
 
   export type DateTimeFilter<$PrismaModel = never> = {
@@ -2253,10 +2319,10 @@ export namespace Prisma {
     latitude?: SortOrder
     longitude?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type AlertAvgOrderByAggregateInput = {
-    id?: SortOrder
     latitude?: SortOrder
     longitude?: SortOrder
   }
@@ -2270,6 +2336,7 @@ export namespace Prisma {
     latitude?: SortOrder
     longitude?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type AlertMinOrderByAggregateInput = {
@@ -2281,28 +2348,27 @@ export namespace Prisma {
     latitude?: SortOrder
     longitude?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type AlertSumOrderByAggregateInput = {
-    id?: SortOrder
     latitude?: SortOrder
     longitude?: SortOrder
   }
 
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+  export type UuidWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedUuidWithAggregatesFilter<$PrismaModel> | string
     _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -2323,20 +2389,30 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
-  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+  export type EnumcategoryWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.category | EnumcategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.category[] | ListEnumcategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.category[] | ListEnumcategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumcategoryWithAggregatesFilter<$PrismaModel> | $Enums.category
     _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedFloatFilter<$PrismaModel>
-    _min?: NestedFloatFilter<$PrismaModel>
-    _max?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedEnumcategoryFilter<$PrismaModel>
+    _max?: NestedEnumcategoryFilter<$PrismaModel>
+  }
+
+  export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -2357,35 +2433,31 @@ export namespace Prisma {
     set?: string
   }
 
-  export type FloatFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
+  export type EnumcategoryFieldUpdateOperationsInput = {
+    set?: $Enums.category
+  }
+
+  export type DecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
   }
 
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
-  export type NestedIntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
+  export type NestedUuidFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidFilter<$PrismaModel> | string
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -2402,15 +2474,22 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
-  export type NestedFloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
+  export type NestedEnumcategoryFilter<$PrismaModel = never> = {
+    equals?: $Enums.category | EnumcategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.category[] | ListEnumcategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.category[] | ListEnumcategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumcategoryFilter<$PrismaModel> | $Enums.category
+  }
+
+  export type NestedDecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
   }
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
@@ -2424,7 +2503,21 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
-  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+  export type NestedUuidWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
     notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -2432,12 +2525,7 @@ export namespace Prisma {
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
@@ -2457,20 +2545,30 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
-  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+  export type NestedEnumcategoryWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.category | EnumcategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.category[] | ListEnumcategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.category[] | ListEnumcategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumcategoryWithAggregatesFilter<$PrismaModel> | $Enums.category
     _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedFloatFilter<$PrismaModel>
-    _min?: NestedFloatFilter<$PrismaModel>
-    _max?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedEnumcategoryFilter<$PrismaModel>
+    _max?: NestedEnumcategoryFilter<$PrismaModel>
+  }
+
+  export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
   }
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {

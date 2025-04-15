@@ -14,13 +14,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum category {
+  HOTSPOT
+  LAW_ENFORCEMENT_PRESENCE
+  COMMUNITY_SHELTER
+  HEALTH_AND_SERVICES
+}
+
 model Alert {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid()) @db.Uuid
   title       String
-  category    String
+  category    category
   description String
   address     String
-  latitude    Float
-  longitude   Float
-  createdAt   DateTime @default(now())
+  latitude    Decimal  @db.Decimal(8, 6)
+  longitude   Decimal  @db.Decimal(9, 6)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@index([latitude, longitude])
+  @@index([category])
+  @@index([title])
+  @@index([address])
+  @@index([description])
+  @@map("alerts")
 }
