@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../lib/generated/prisma"
 }
 
 datasource db {
@@ -17,8 +16,8 @@ datasource db {
 enum category {
   HOTSPOT
   LAW_ENFORCEMENT_PRESENCE
-  COMMUNITY_SHELTER
-  HEALTH_AND_SERVICES
+  COMMUNITY_CENTER
+  PUBLIC_SAFETY
 }
 
 model Alert {
