@@ -1,9 +1,11 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 -- CreateEnum
 CREATE TYPE "category" AS ENUM ('HOTSPOT', 'LAW_ENFORCEMENT_PRESENCE', 'COMMUNITY_SHELTER', 'HEALTH_AND_SERVICES');
 
 -- CreateTable
 CREATE TABLE "alerts" (
-    "id" UUID NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "title" TEXT NOT NULL,
     "category" "category" NOT NULL,
     "description" TEXT NOT NULL,
