@@ -4,46 +4,34 @@ const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    console.log("❌ Wrong method:", req.method);
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
   try {
-    console.log("📝 API: Received request");
-    console.log("Request body:", req.body);
-    
+    console.log("📝 API: Received alert submission");
     const { title, category, description, address, latitude, longitude } = req.body;
+    console.log("Request data:", { title, category, description, address, latitude, longitude });
 
     // Validate required fields
     if (!title || !category || !description || !address || !latitude || !longitude) {
-      console.error("❌ API: Missing required fields");
-      console.log("Received data:", { title, category, description, address, latitude, longitude });
+      console.error("❌ Missing required fields");
       return res.status(400).json({ 
         message: "Missing required fields",
         receivedData: { title, category, description, address, latitude, longitude }
       });
     }
 
-    // Validate category enum
+    // Validate category
     const validCategories = ['COMMUNITY_CENTER', 'PUBLIC_SAFETY', 'LAW_ENFORCEMENT_PRESENCE', 'HOTSPOT'];
     if (!validCategories.includes(category)) {
-      console.error("❌ API: Invalid category:", category);
+      console.error("❌ Invalid category:", category);
       return res.status(400).json({ 
         message: "Invalid category",
-        validCategories,
-        receivedCategory: category
+        validCategories 
       });
     }
 
-    console.log("🔍 API: Creating alert with data:", {
-      title,
-      category,
-      description,
-      address,
-      latitude: parseFloat(latitude),
-      longitude: parseFloat(longitude)
-    });
-
+    // Create the alert
     const alert = await prisma.alert.create({
       data: {
         title,
@@ -55,32 +43,17 @@ export default async function handler(req, res) {
       }
     });
 
-    console.log("✅ API: Alert created successfully:", alert);
-    return res.status(200).json({
+    console.log("✅ Alert created successfully:", alert);
+    return res.status(200).json({ 
       message: "Alert created successfully",
-      alert: alert
+      alert 
     });
-    
+
   } catch (error) {
-    console.error("❌ API Error details:", {
-      name: error.name,
-      message: error.message,
-      code: error.code,
-      stack: error.stack
-    });
-    
-    // Check for specific Prisma errors
-    if (error.code === 'P2002') {
-      return res.status(400).json({ 
-        message: "This alert already exists",
-        error: error.message
-      });
-    }
-    
+    console.error("❌ Error creating alert:", error);
     return res.status(500).json({ 
       message: "Error creating alert",
-      error: error.message,
-      code: error.code
+      error: error.message 
     });
   } finally {
     await prisma.$disconnect();

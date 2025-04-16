@@ -12,30 +12,57 @@ const SubmitAlertForm = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
+    setSuccess(false);
     
     try {
-      console.log("📝 Submitting form data:", formData);
+      console.log("📝 Starting form submission...");
+      console.log("Form data:", formData);
       
-      const response = await fetch('/api/submit-alert', {
+      // Validate form data before sending
+      if (!formData.title || !formData.category || !formData.description || !formData.address || !formData.latitude || !formData.longitude) {
+        throw new Error("Please fill in all fields");
+      }
+
+      console.log("🔄 Sending request to /api/submit-report...");
+      const response = await fetch('/api/submit-report', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
         body: JSON.stringify(formData),
+      }).catch(error => {
+        console.error("Network error:", error);
+        throw new Error("Network error - please check your connection");
       });
 
-      const data = await response.json();
+      if (!response) {
+        throw new Error("No response from server");
+      }
+
+      let data;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+        console.log("📦 Response data:", data);
+      } else {
+        console.error("Received non-JSON response:", await response.text());
+        throw new Error("Server returned invalid response format");
+      }
 
       if (!response.ok) {
         throw new Error(data.message || 'Failed to submit alert');
       }
 
       console.log("✅ Alert submitted successfully:", data);
+      setSuccess(true);
+      alert("Alert submitted successfully!");
 
       // Clear form
       setFormData({
@@ -48,16 +75,19 @@ const SubmitAlertForm = () => {
       });
 
       // Refresh the map markers
+      console.log("🔄 Refreshing map markers...");
       if (window.refreshMapAlerts) {
         await window.refreshMapAlerts();
       }
 
-      alert('Alert submitted successfully!');
-      
     } catch (error) {
       console.error("❌ Submit error:", error);
+      console.error("Error details:", {
+        message: error.message,
+        stack: error.stack
+      });
       setError(error.message);
-      alert(`Failed to submit alert: ${error.message}`);
+      alert("Error submitting alert: " + error.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -82,6 +112,18 @@ const SubmitAlertForm = () => {
           marginBottom: '10px'
         }}>
           {error}
+        </div>
+      )}
+
+      {success && (
+        <div style={{ 
+          color: 'green', 
+          backgroundColor: '#efe', 
+          padding: '10px', 
+          borderRadius: '4px',
+          marginBottom: '10px'
+        }}>
+          Alert submitted successfully!
         </div>
       )}
 
