@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import mapConfig from "../lib/googleMapsConfig";
+import { useRouter } from 'next/navigation';
+import { useClerk } from '@clerk/nextjs';
 import {
   APIProvider,
   Map,
@@ -24,6 +26,8 @@ const categoryColors = {
 };
 
 const MapComponent = () => {
+  const { signOut } = useClerk();
+  const router = useRouter();
   console.log("✅ map.jsx is running!");
   const [alerts, setAlerts] = useState([]);
   const [selectedMarker, setSelectedMarker] = useState(null);
@@ -80,8 +84,33 @@ const MapComponent = () => {
     setSelectedMarker(alert);
   }
 
+  const handleLogout = async () => {
+    await signOut();
+    router.push('/sign-in');
+  };
+
   return (
     <div style={{ position: "relative", width: "100%", height: "100vh" }}>
+      <button
+        onClick={handleLogout}
+        style={{
+          position: 'absolute',
+          top: 1,
+          right: 22,
+          backgroundColor: 'white',
+          color: '#333',
+          padding: '1px 5px',
+          borderRadius: '3px',
+          border: '1px solid #ccc',
+          cursor: 'pointer',
+          zIndex: 1000,
+          fontWeight: 'bold',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}
+      >
+        Logout
+      </button>
+
       {error && (
         <div style={{
           position: 'absolute',
@@ -120,11 +149,11 @@ const MapComponent = () => {
           gestureHandling={'greedy'}
           disableDefaultUI={true}
         >
-        {Array.isArray(alerts) && alerts.map((alert, index) => {
+        {Array.isArray(alerts) && alerts.map((alert) => {
           console.log("🎯 Rendering marker:", alert);
           return (           
             <AdvancedMarker
-              key={alert.id || index}
+              key={alert.id}
               position={{ 
                 lat: parseFloat(alert.latitude), 
                 lng: parseFloat(alert.longitude)
@@ -182,6 +211,7 @@ const MapComponent = () => {
           <p><strong>📌 Title:</strong> {selectedMarker.title}</p>
           <p><strong>🏷️ Category:</strong> {selectedMarker.category.replace(/_/g, ' ')}</p>
           <p><strong>📝 Description:</strong><br /> {selectedMarker.description}</p>
+          <p><strong>📍 Address:</strong><br /> {selectedMarker.address}</p>
         </div>
       )}
     </div>

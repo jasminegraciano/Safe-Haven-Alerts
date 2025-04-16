@@ -8,8 +8,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    console.log("📝 Received alert data:", req.body);
-    
     const { title, category, description, address, latitude, longitude } = req.body;
 
     // Validate required fields
@@ -31,15 +29,6 @@ export default async function handler(req, res) {
       });
     }
 
-    console.log("🔍 Creating alert with data:", {
-      title,
-      category,
-      description,
-      address,
-      latitude: parseFloat(latitude),
-      longitude: parseFloat(longitude)
-    });
-
     const alert = await prisma.alert.create({
       data: {
         title,
@@ -55,18 +44,10 @@ export default async function handler(req, res) {
     return res.status(200).json(alert);
     
   } catch (error) {
-    console.error("❌ Error details:", {
-      name: error.name,
-      message: error.message,
-      code: error.code,
-      stack: error.stack
-    });
-    
-    // Send more detailed error message
+    console.error("❌ Error creating alert:", error);
     return res.status(500).json({ 
       message: "Error creating alert",
-      error: error.message,
-      code: error.code
+      error: error.message 
     });
   } finally {
     await prisma.$disconnect();
