@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import mapConfig from "../lib/googleMapsConfig";
 import {
   APIProvider,
@@ -15,71 +15,102 @@ if (!API_KEY) {
   throw Error("GOOGLE MAPS API KEY not found.")
 }
 
-const locations = [
-  {
-    id: 1,
-    category: "Community Center",
-    position: { lat: alert.latitude, lng: alert.longitude },    
-    title: "Community Support Center",
-    description: "Spaces that offer shelter, resources, food, or emotional support.",
-    color: '#34A853' // green
-  },
-  {
-    id: 2,
-    category: "Public Safety",
-    position: { lat: alert.latitude, lng: alert.longitude },    
-    title: "Health & Wellness Site",
-    description: "Free clinics, mental health orgs, resource centers. Physical and mental safety.",
-    color: '#4285F4' // blue
-  },
-  {
-    id: 3,
-    category: "Law Enforcement Presence",
-    position: { lat: alert.latitude, lng: alert.longitude },    
-    title: "Police Activity",
-    description: "An active or recent police-related incident or patrol.",
-    color: '#FBBC04' // yellow
-
-  },
-  {
-    id: 4,
-    category: "Hot Spot",
-    position: { lat: alert.latitude, lng: alert.longitude },    
-    title: "Caution Area",
-    description: "General zones of heavy presence or ongoing concern.",
-    color: '#EA4335' // red
-
-  }
-];
+// Color mapping for different categories
+const categoryColors = {
+  COMMUNITY_CENTER: '#34A853',
+  PUBLIC_SAFETY: '#4285F4',
+  LAW_ENFORCEMENT_PRESENCE: '#FBBC04',
+  HOTSPOT: '#EA4335'
+};
 
 const MapComponent = () => {
   console.log("✅ map.jsx is running!");
-
-  const [selectedMarker, setSelectedMarker] = useState(null);
-  console.log("✅ Google Maps is loaded!");
-
-  const handleClick = async (location) => {
-    setSelectedMarker(location);
-  }
-
   const [alerts, setAlerts] = useState([]);
-
-useEffect(() => {
-  async function fetchAlerts() {
+  const [selectedMarker, setSelectedMarker] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [lastUpdate, setLastUpdate] = useState(Date.now());
+  
+  const refreshAlerts = useCallback(async () => {
     try {
-      const res = await fetch('/api/get-alerts');
-      const data = await res.json();
-      setAlerts(data);
-    } catch (error) {
-      console.error('Error fetching alerts:', error);
+      setIsLoading(true);
+      setError(null);
+      console.log("🔄 Refreshing alerts...");
+      
+      const response = await fetch("/api/get-alerts");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("✅ Fresh alerts from DB:", data);
+      
+      const validAlerts = data.filter(alert => {
+        return alert.latitude && 
+               alert.longitude && 
+               !isNaN(parseFloat(alert.latitude)) && 
+               !isNaN(parseFloat(alert.longitude));
+      });
+      
+      setAlerts(validAlerts);
+      setLastUpdate(Date.now());
+      
+    } catch (err) {
+      console.error("❌ Refresh error:", err);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
-  }
+  }, []);
 
-  fetchAlerts();
-}, []);
+  // Initial load
+  useEffect(() => {
+    refreshAlerts();
+  }, [refreshAlerts]);
+
+  // Expose refresh function to window for form to use
+  useEffect(() => {
+    window.refreshMapAlerts = refreshAlerts;
+    return () => {
+      delete window.refreshMapAlerts;
+    };
+  }, [refreshAlerts]);
+
+  const handleClick = (alert) => {
+    setSelectedMarker(alert);
+  }
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100vh" }}>
+      {error && (
+        <div style={{
+          position: 'absolute',
+          top: 20,
+          left: 20,
+          backgroundColor: '#ff4444',
+          color: 'white',
+          padding: '10px',
+          borderRadius: '5px',
+          zIndex: 1000
+        }}>
+          Error: {error}
+        </div>
+      )}
+      
+      {isLoading && (
+        <div style={{
+          position: 'absolute',
+          top: 20,
+          left: 20,
+          backgroundColor: '#ffffff',
+          padding: '10px',
+          borderRadius: '5px',
+          zIndex: 1000
+        }}>
+          Loading alerts...
+        </div>
+      )}
+      
       <APIProvider apiKey={API_KEY}>
         <Map
           mapId="c2e97ad0432fad22"
@@ -89,30 +120,35 @@ useEffect(() => {
           gestureHandling={'greedy'}
           disableDefaultUI={true}
         >
-          {alerts.map((alert, index) => (
+        {Array.isArray(alerts) && alerts.map((alert, index) => {
+          console.log("🎯 Rendering marker:", alert);
+          return (           
             <AdvancedMarker
-              key={index}
-              position={{ lat: alert.latitude, lng: alert.longitude }}
+              key={alert.id || index}
+              position={{ 
+                lat: parseFloat(alert.latitude), 
+                lng: parseFloat(alert.longitude)
+              }}
+              onClick={() => handleClick(alert)} 
             >
               <div style={{
-                backgroundColor: '#FF5A5F',
+                backgroundColor: categoryColors[alert.category] || '#FF5A5F',
                 color: 'white',
                 padding: '4px 8px',
                 borderRadius: '6px',
                 fontSize: '0.8rem',
                 fontWeight: 'bold'
               }}>
-                {alert.category}
+                {alert.category?.replace(/_/g, ' ') || 'Unknown'}
               </div>
             </AdvancedMarker>
-          ))}
-
+          );
+        })}
         </Map>
       </APIProvider>
-      {/* 🟦 Floating info box */}
+
       {selectedMarker && (
-        <div
-          style={{
+        <div style={{
             position: 'absolute',
             top: 20,
             right: 20,
@@ -124,33 +160,32 @@ useEffect(() => {
             fontFamily: 'Arial, sans-serif',
             color: '#333',
             lineHeight: '1.5',
-            borderLeft: '5px solid #FF5A5F',
-        }}
-      >
-        <button
-          onClick={() => setSelectedMarker(null)}
-          style={{
-            position: 'absolute',
-            top: '10px',
-            right: '15px',
-            background: 'transparent',
-            border: 'none',
-            fontSize: '1.2rem',
-            color: '#aaa',
-            cursor: 'pointer',
-          }}
-          aria-label="Close"
-      >
-          ✕
-      </button>
+            borderLeft: `5px solid ${categoryColors[selectedMarker.category] || '#FF5A5F'}`,
+        }}>
+          <button
+            onClick={() => setSelectedMarker(null)}
+            style={{
+              position: 'absolute',
+              top: '10px',
+              right: '15px',
+              background: 'transparent',
+              border: 'none',
+              fontSize: '1.2rem',
+              color: '#aaa',
+              cursor: 'pointer',
+            }}
+            aria-label="Close"
+          >
+            ✕
+          </button>
 
-      <p><strong>📌 Title:</strong> {selectedMarker.title}</p>
-      <p><strong>🏷️ Category:</strong> {selectedMarker.category}</p>
-      <p><strong>📝 Description:</strong><br /> {selectedMarker.description}</p>
+          <p><strong>📌 Title:</strong> {selectedMarker.title}</p>
+          <p><strong>🏷️ Category:</strong> {selectedMarker.category.replace(/_/g, ' ')}</p>
+          <p><strong>📝 Description:</strong><br /> {selectedMarker.description}</p>
+        </div>
+      )}
     </div>
-)}
-
-</div>
   );
 };
+
 export default MapComponent;

@@ -1,15 +1,41 @@
 .sidebar {
   position: fixed;
   top: 0;
-  left: -220px; /* Hide sidebar by default */
+  left: -320px; /* Increased width to accommodate form */
   height: 100%;
-  width: 200px;
+  width: 300px; /* Increased width */
   background: white;
   color: black;
   padding: 1rem;
   border-right: 1px solid #ccc;
   transition: left 0.3s ease;
   z-index: 1000;
+  overflow-y: auto; /* Allow scrolling */
+}
+
+.sidebarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  color: #000;
+  background-color: #f0f0f0;
 }
 
 .open {
@@ -53,6 +79,7 @@
   color: #222;
   font-size: 24px;
   font-weight: bold;
+  margin: 0; /* Remove margin since it's now in a flex container */
 }
 
 .menu-btn {
@@ -66,4 +93,26 @@
   padding: 4px 8px;
   cursor: pointer;
   z-index: 1100;
+}
+
+.submitButton {
+  background: none;
+  border: none;
+  color: black;
+  font-weight: bold;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.submitButton:hover {
+  text-decoration: underline;
+}
+
+.formContainer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
 }

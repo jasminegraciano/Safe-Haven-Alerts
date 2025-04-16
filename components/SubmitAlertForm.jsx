@@ -1,143 +1,178 @@
 import { useState } from 'react';
 
 const SubmitAlertForm = () => {
-  const [form, setForm] = useState({
+  const [formData, setFormData] = useState({
     title: '',
-    category: '',
+    category: 'COMMUNITY_CENTER',
     description: '',
-    address: ''
+    address: '',
+    latitude: '',
+    longitude: ''
   });
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+    setIsSubmitting(true);
+    setError(null);
+    
     try {
-      const res = await fetch('/api/submit-report', {
+      console.log("📝 Submitting form data:", formData);
+      
+      const response = await fetch('/api/submit-alert', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
-  
-      const data = await res.json();
-  
-      if (res.ok) {
-        alert('✅ Alert submitted!');
-        setForm({
-          title: '',
-          category: '',
-          description: '',
-          address: ''
-        });
-      } else {
-        alert(data.message || 'Failed to submit alert');
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to submit alert');
       }
+
+      console.log("✅ Alert submitted successfully:", data);
+
+      // Clear form
+      setFormData({
+        title: '',
+        category: 'COMMUNITY_CENTER',
+        description: '',
+        address: '',
+        latitude: '',
+        longitude: ''
+      });
+
+      // Refresh the map markers
+      if (window.refreshMapAlerts) {
+        await window.refreshMapAlerts();
+      }
+
+      alert('Alert submitted successfully!');
+      
     } catch (error) {
-      console.error('Error submitting alert:', error);
-      alert('Something went wrong.');
+      console.error("❌ Submit error:", error);
+      setError(error.message);
+      alert(`Failed to submit alert: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
-  
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   return (
-    <div style={styles.wrapper}>
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <h2 style={styles.heading}>📍 Submit a New Alert</h2>
+    <form onSubmit={handleSubmit} className="space-y-4 p-4">
+      {error && (
+        <div style={{ 
+          color: 'red', 
+          backgroundColor: '#fee', 
+          padding: '10px', 
+          borderRadius: '4px',
+          marginBottom: '10px'
+        }}>
+          {error}
+        </div>
+      )}
 
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Title</label>
         <input
+          type="text"
           name="title"
-          placeholder="Alert Title"
-          value={form.title}
+          value={formData.title}
           onChange={handleChange}
-          style={styles.input}
           required
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         />
+      </div>
 
-        <input
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Category</label>
+        <select
           name="category"
-          placeholder="Category (e.g., Hot Spot, Police)"
-          value={form.category}
+          value={formData.category}
           onChange={handleChange}
-          style={styles.input}
           required
-        />
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+        >
+          <option value="COMMUNITY_CENTER">Community Center</option>
+          <option value="PUBLIC_SAFETY">Public Safety</option>
+          <option value="LAW_ENFORCEMENT_PRESENCE">Law Enforcement Presence</option>
+          <option value="HOTSPOT">Hotspot</option>
+        </select>
+      </div>
 
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Description</label>
         <textarea
           name="description"
-          placeholder="Brief Description"
-          value={form.description}
+          value={formData.description}
           onChange={handleChange}
-          style={styles.textarea}
           required
+          rows="3"
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         />
+      </div>
 
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Address</label>
         <input
+          type="text"
           name="address"
-          placeholder="Location Address"
-          value={form.address}
+          value={formData.address}
           onChange={handleChange}
-          style={styles.input}
           required
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         />
+      </div>
 
-        <button type="submit" style={styles.button}>🚨 Submit Alert</button>
-      </form>
-    </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Latitude</label>
+          <input
+            type="number"
+            step="any"
+            name="latitude"
+            value={formData.latitude}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Longitude</label>
+          <input
+            type="number"
+            step="any"
+            name="longitude"
+            value={formData.longitude}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          />
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+      >
+        {isSubmitting ? 'Submitting...' : 'Submit Alert'}
+      </button>
+    </form>
   );
-};
-
-const styles = {
-  wrapper: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: '100vh',
-    backgroundColor: '#fef9f4',
-    padding: '2rem'
-  },
-  form: {
-    width: '100%',
-    maxWidth: '500px',
-    backgroundColor: '#fff',
-    padding: '2rem',
-    borderRadius: '12px',
-    boxShadow: '0 0 12px rgba(0,0,0,0.1)',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1rem'
-  },
-  heading: {
-    textAlign: 'center',
-    marginBottom: '1rem',
-    fontSize: '1.5rem',
-    color: '#222'
-  },
-  input: {
-    padding: '0.75rem',
-    fontSize: '1rem',
-    borderRadius: '6px',
-    border: '1px solid #ccc'
-  },
-  textarea: {
-    padding: '0.75rem',
-    fontSize: '1rem',
-    borderRadius: '6px',
-    border: '1px solid #ccc',
-    minHeight: '100px'
-  },
-  button: {
-    padding: '0.9rem',
-    fontSize: '1rem',
-    backgroundColor: '#e74c3c',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    transition: 'background 0.3s'
-  }
 };
 
 export default SubmitAlertForm;
