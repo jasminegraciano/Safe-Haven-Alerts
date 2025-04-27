@@ -1,46 +1,16 @@
 .sidebar {
   position: fixed;
   top: 0;
-  left: -320px; /* Increased width to accommodate form */
-  height: 100%;
-  width: 300px; /* Increased width */
-  background: white;
-  color: black;
-  padding: 1rem;
-  border-right: 1px solid #ccc;
-  transition: left 0.3s ease;
-  z-index: 1000;
-  overflow-y: auto; /* Allow scrolling */
+  left: 0;
+  height: 100vh; 
+  width: 200px; 
+  background-color: white; 
+  padding: 20px;
+  box-shadow: .5px 0 5px rgba(0,0,0,0.1); 
+  z-index: 1000; 
+  overflow-y: auto; 
 }
 
-.sidebarHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #eee;
-}
-
-.closeButton {
-  background: none;
-  border: none;
-  font-size: 24px;
-  color: #666;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-}
-
-.closeButton:hover {
-  color: #000;
-  background-color: #f0f0f0;
-}
-
-.open {
-  left: 0; /* Show sidebar when open */
-}
 
 .sidebar h2 {
   font-size: 20px;

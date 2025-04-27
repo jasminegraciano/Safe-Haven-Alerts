@@ -11,7 +11,7 @@
   "dependencies": {
     "@clerk/nextjs": "^6.12.9",
     "@prisma/client": "^6.6.0",
-    "@react-google-maps/api": "^2.19.2",
+    "@react-google-maps/api": "^2.20.6",
     "@vis.gl/react-google-maps": "^1.5.2",
     "next": "^14.0.0",
     "node-fetch": "^3.3.2",

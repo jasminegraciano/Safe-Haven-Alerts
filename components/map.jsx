@@ -1,9 +1,10 @@
 'use client';
-
 import { useState, useEffect, useCallback } from 'react';
 import mapConfig from "../lib/googleMapsConfig";
 import { useRouter } from 'next/navigation';
 import { useClerk } from '@clerk/nextjs';
+import { Autocomplete } from '@vis.gl/react-google-maps';
+import { useRef } from 'react';
 import {
   APIProvider,
   Map,
@@ -34,7 +35,16 @@ const MapComponent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastUpdate, setLastUpdate] = useState(Date.now());
-  
+  const [searchInput, setSearchInput] = useState('');
+  const [autocompleteResults, setAutocompleteResults] = useState([]);
+  const autocompleteService = useRef(null);
+  const geocoder = useRef(null);
+  const [mapCenter, setMapCenter] = useState(mapConfig.mapOptions.center);
+  const [mapZoom, setMapZoom] = useState(mapConfig.mapOptions.zoom);
+  const [activeIndex, setActiveIndex] = useState(-1); // for keyboard scroll
+
+  const searchBoxRef = useRef(null);
+
   const refreshAlerts = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -79,6 +89,77 @@ const MapComponent = () => {
       delete window.refreshMapAlerts;
     };
   }, [refreshAlerts]);
+//Initialize Google services when map loads
+  useEffect(() => {
+    if (window.google && window.google.maps && window.google.maps.places) {
+      if (!autocompleteService.current) {
+        autocompleteService.current = new window.google.maps.places.AutocompleteService();
+      }
+      if (!geocoder.current) {
+        geocoder.current = new window.google.maps.Geocoder();
+      }
+    } else {
+      console.error("Google Maps Places library not loaded yet");
+    }
+  }, []);
+
+  //handle input change
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchInput(value);
+  
+    if (autocompleteService.current && value.length > 2) {
+      autocompleteService.current.getPlacePredictions({ input: value }, (predictions, status) => {
+        if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
+          setAutocompleteResults(predictions);
+        } else {
+          setAutocompleteResults([]);
+        }
+      });
+    }
+  };
+  const handleKeyDown = (e) => {
+    if (autocompleteResults.length === 0) return;
+  
+    if (e.key === "ArrowDown") {
+      setActiveIndex((prev) => (prev + 1) % autocompleteResults.length);
+    } else if (e.key === "ArrowUp") {
+      setActiveIndex((prev) => (prev - 1 + autocompleteResults.length) % autocompleteResults.length);
+    } else if (e.key === "Enter") {
+      if (activeIndex >= 0 && activeIndex < autocompleteResults.length) {
+        handleSelectPlace(autocompleteResults[activeIndex].place_id);
+      }
+    }
+  };
+  
+
+//handle clicking a prediction
+  const handleSelectPlace = (placeId) => {
+    if (!geocoder.current) return;
+  
+    geocoder.current.geocode({ placeId }, (results, status) => {
+      if (status === "OK" && results[0]) {
+        const location = results[0].geometry.location;
+        setSelectedMarker({
+          title: results[0].formatted_address,
+          category: "PUBLIC_SAFETY",
+          description: results[0].formatted_address,
+          address: results[0].formatted_address,
+          latitude: location.lat(),
+          longitude: location.lng()
+        });
+        setMapCenter({
+          lat: location.lat(),
+          lng: location.lng()
+        });
+        setMapZoom(15); // zoom in when user selects a place
+        
+        setSearchInput('');
+        setAutocompleteResults([]);
+      }
+    });
+  };
+  
 
   const handleClick = (alert) => {
     setSelectedMarker(alert);
@@ -91,12 +172,69 @@ const MapComponent = () => {
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100vh" }}>
+    <div style={{ 
+      position: 'absolute', 
+      top: 10, 
+      left: '50%', 
+      transform: 'translateX(-50%)',
+      zIndex: 999, 
+      backgroundColor: 'white', 
+      padding: '10px', 
+      borderRadius: '8px' 
+    }}>
+      
+      <input
+        ref={searchBoxRef}
+        type="text"
+        value={searchInput}
+        onChange={handleSearchChange}
+        onKeyDown={handleKeyDown}
+        placeholder="Search a place..."
+        style={{
+          width: '300px',
+          height: '35px',
+          fontSize: '14px',
+          paddingLeft: '8px',
+          border: '1px solid #ccc',
+          borderRadius: '6px'
+        }}
+      />
+      <ul style={{
+        listStyle: 'none',
+        padding: 0,
+        marginTop: '8px',
+        backgroundColor: 'white',
+        maxHeight: '200px',
+        overflowY: 'auto',
+        borderRadius: '4px',
+        boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+      }}>
+        {autocompleteResults.map((result, index) => (
+          <li 
+            key={result.place_id}
+            onClick={() => handleSelectPlace(result.place_id)}
+            style={{
+              padding: '8px',
+              borderBottom: '1px solid #eee',
+              cursor: 'pointer',
+              backgroundColor: activeIndex === index ? '#f1f1f1' : 'white'
+            }}
+          >
+            {result.description}
+          </li>
+        ))}
+      </ul>
+
+
+  </div>
+
+
       <button
         onClick={handleLogout}
         style={{
           position: 'absolute',
           top: 1,
-          right: 22,
+          right: 50,
           backgroundColor: 'white',
           color: '#333',
           padding: '1px 5px',
@@ -140,15 +278,33 @@ const MapComponent = () => {
         </div>
       )}
       
-      <APIProvider apiKey={API_KEY}>
-        <Map
-          mapId="c2e97ad0432fad22"
-          style={{width: '100vw', height: '100vh'}}
-          defaultCenter={mapConfig.mapOptions.center}
-          defaultZoom={mapConfig.mapOptions.zoom}
-          gestureHandling={'greedy'}
-          disableDefaultUI={true}
-        >
+      <APIProvider apiKey={API_KEY} libraries={['places']}>
+      <Map
+        mapId="c2e97ad0432fad22"
+        style={{ width: '100vw', height: '100vh' }}
+        center={mapCenter}
+        zoom={mapZoom}
+        gestureHandling={'greedy'}
+        disableDefaultUI={false}
+        options={{
+          draggable: true,           // <-- make sure the map can drag freely
+          scrollwheel: true,          // <-- allow mouse wheel to zoom
+          streetViewControl: true,    // optional: street view
+          mapTypeControl: false,      // optional: hide map type button
+          fullscreenControl: true,    // optional: allow fullscreen
+          zoomControl: true           // optional: show zoom + and - buttons
+        }}
+        onCenterChanged={(e) => {
+          const center = e.detail.center;
+          setMapCenter({ lat: center.lat, lng: center.lng });
+        }}
+        onZoomChanged={(e) => {
+          const zoom = e.detail.zoom;
+          setMapZoom(zoom);
+        }}
+      >
+
+
         {Array.isArray(alerts) && alerts.map((alert) => {
           console.log("🎯 Rendering marker:", alert);
           return (           
@@ -173,6 +329,22 @@ const MapComponent = () => {
             </AdvancedMarker>
           );
         })}
+        {selectedMarker && (
+          <AdvancedMarker
+            position={{
+              lat: parseFloat(selectedMarker.latitude),
+              lng: parseFloat(selectedMarker.longitude)
+            }}
+          >
+            <Pin
+              background={"#4285F4"}
+              borderColor={"#3367D6"}
+              glyphColor={"white"}
+              scale={1.2}
+            />
+          </AdvancedMarker>
+        )}
+
         </Map>
       </APIProvider>
 

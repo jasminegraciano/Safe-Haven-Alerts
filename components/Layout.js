@@ -3,21 +3,15 @@ import Sidebar from './Sidebar';
 import styles from '../styles/Sidebar.module.css'; 
 
 export default function Layout({ children }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true); // Sidebar open by default
 
   return (
-    <div className="app-container">
-      <button
-        className={`menu-btn ${sidebarOpen ? 'open' : ''}`}
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-      >
-        ☰
-      </button>
-      <Sidebar isOpen={sidebarOpen} closeSidebar={() => setSidebarOpen(false)} />
-      <main className="map-area">
+    <div className="app-container" style={{ display: 'flex', minHeight: '100vh' }}>
+      <Sidebar />
+
+      <main className="map-area" style={{ flexGrow: 1 }}>
         {children}
       </main>
     </div>
   );
 }
-
