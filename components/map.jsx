@@ -32,6 +32,7 @@ const MapComponent = () => {
   console.log("✅ map.jsx is running!");
   const [alerts, setAlerts] = useState([]);
   const [selectedMarker, setSelectedMarker] = useState(null);
+  const [searchResult, setSearchResult] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastUpdate, setLastUpdate] = useState(Date.now());
@@ -106,6 +107,7 @@ const MapComponent = () => {
   //handle input change
   const handleSearchChange = (e) => {
     const value = e.target.value;
+    console.log('> New search: ', value);
     setSearchInput(value);
   
     if (autocompleteService.current && value.length > 2) {
@@ -140,10 +142,8 @@ const MapComponent = () => {
     geocoder.current.geocode({ placeId }, (results, status) => {
       if (status === "OK" && results[0]) {
         const location = results[0].geometry.location;
-        setSelectedMarker({
+        setSearchResult({
           title: results[0].formatted_address,
-          category: "PUBLIC_SAFETY",
-          description: results[0].formatted_address,
           address: results[0].formatted_address,
           latitude: location.lat(),
           longitude: location.lng()
@@ -152,7 +152,7 @@ const MapComponent = () => {
           lat: location.lat(),
           lng: location.lng()
         });
-        setMapZoom(15); // zoom in when user selects a place
+        setMapZoom(15); 
         
         setSearchInput('');
         setAutocompleteResults([]);
@@ -224,8 +224,6 @@ const MapComponent = () => {
           </li>
         ))}
       </ul>
-
-
   </div>
 
 
@@ -278,7 +276,7 @@ const MapComponent = () => {
         </div>
       )}
       
-      <APIProvider apiKey={API_KEY} libraries={['places']}>
+      
       <Map
         mapId="c2e97ad0432fad22"
         style={{ width: '100vw', height: '100vh' }}
@@ -287,12 +285,12 @@ const MapComponent = () => {
         gestureHandling={'greedy'}
         disableDefaultUI={false}
         options={{
-          draggable: true,           // <-- make sure the map can drag freely
-          scrollwheel: true,          // <-- allow mouse wheel to zoom
-          streetViewControl: true,    // optional: street view
-          mapTypeControl: false,      // optional: hide map type button
-          fullscreenControl: true,    // optional: allow fullscreen
-          zoomControl: true           // optional: show zoom + and - buttons
+          draggable: true,          
+          scrollwheel: true,          
+          streetViewControl: true,    
+          mapTypeControl: false,      
+          fullscreenControl: true,    
+          zoomControl: true           
         }}
         onCenterChanged={(e) => {
           const center = e.detail.center;
@@ -316,19 +314,30 @@ const MapComponent = () => {
               }}
               onClick={() => handleClick(alert)} 
             >
-              <div style={{
-                backgroundColor: categoryColors[alert.category] || '#FF5A5F',
-                color: 'white',
-                padding: '4px 8px',
-                borderRadius: '6px',
-                fontSize: '0.8rem',
-                fontWeight: 'bold'
-              }}>
-                {alert.category?.replace(/_/g, ' ') || 'Unknown'}
-              </div>
+              <Pin
+                background={categoryColors[alert.category] || '#FF5A5F'}
+                borderColor={categoryColors[alert.category] || '#FF5A5F'}
+                glyphColor={"white"}
+                scale={1.2}
+              />
             </AdvancedMarker>
           );
         })}
+        {searchResult && (
+          <AdvancedMarker
+            position={{
+              lat: parseFloat(searchResult.latitude),
+              lng: parseFloat(searchResult.longitude)
+            }}
+          >
+            <Pin
+              background={"#666666"}
+              borderColor={"#444444"}
+              glyphColor={"white"}
+              scale={1.2}
+            />
+          </AdvancedMarker>
+        )}
         {selectedMarker && (
           <AdvancedMarker
             position={{
@@ -337,8 +346,8 @@ const MapComponent = () => {
             }}
           >
             <Pin
-              background={"#4285F4"}
-              borderColor={"#3367D6"}
+              background={categoryColors[selectedMarker.category] || '#FF5A5F'}
+              borderColor={categoryColors[selectedMarker.category] || '#FF5A5F'}
               glyphColor={"white"}
               scale={1.2}
             />
@@ -346,7 +355,6 @@ const MapComponent = () => {
         )}
 
         </Map>
-      </APIProvider>
 
       {selectedMarker && (
         <div style={{

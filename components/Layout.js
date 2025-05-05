@@ -1,6 +1,14 @@
 import { useState } from 'react';
 import Sidebar from './Sidebar';
 import styles from '../styles/Sidebar.module.css'; 
+import {
+  APIProvider,
+  Map,
+  AdvancedMarker,
+  Pin
+} from '@vis.gl/react-google-maps';
+
+const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 export default function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true); // Sidebar open by default
@@ -10,7 +18,9 @@ export default function Layout({ children }) {
       <Sidebar />
 
       <main className="map-area" style={{ flexGrow: 1 }}>
-        {children}
+        <APIProvider apiKey={API_KEY} libraries={['places']}>
+          {children}
+        </APIProvider>
       </main>
     </div>
   );
