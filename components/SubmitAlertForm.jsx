@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useMapsLibrary } from "@vis.gl/react-google-maps"
+import { category } from '@/lib/generated/prisma';
 
 const SubmitAlertForm = () => {
   const inputRef = useRef(null)
@@ -9,9 +10,7 @@ const SubmitAlertForm = () => {
     title: '',
     category: 'COMMUNITY_CENTER',
     description: '',
-    address: '',
-    latitude: '',
-    longitude: ''
+    address: ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -107,6 +106,16 @@ const SubmitAlertForm = () => {
 
   const onPlaceSelect = (place) => {
     console.log('> New Place: ', place);
+    const newFormData = {
+      address: place.name,
+      latitude: place.geometry.location.lat(),
+      longitude: place.geometry.location.lng(),
+      category: formData.category,
+      title: formData.title,
+      description: formData.description
+    }
+    console.log('> New FORM DATA: ', newFormData)
+    setFormData(newFormData)
   }
 
   useEffect(() => {
@@ -203,7 +212,9 @@ const SubmitAlertForm = () => {
         />
       </div> */}
       <div className='autocomplete-container'>
-        <input ref={inputRef} />
+        <input ref={inputRef} onSubmit={(e) => {
+          e.preventDefault();
+        }} />
       </div>
 
       <button

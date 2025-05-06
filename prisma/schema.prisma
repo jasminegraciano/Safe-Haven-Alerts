@@ -38,3 +38,4 @@ model Alert {
   @@index([description])
   @@map("alerts")
 }
+
